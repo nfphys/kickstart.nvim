@@ -176,6 +176,18 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
+-- 今開いているファイルの相対パス（カレントディレクトリ基準）をシステムクリップボードにコピーする
+vim.keymap.set('n', '<leader>yp', function()
+  local path = vim.fn.expand '%:.'
+  -- 無名バッファや特殊バッファ（ファイル名なし）では空文字を「コピー成功」と誤通知しないようにガードする
+  if path == '' then
+    vim.notify('No file name to copy', vim.log.levels.WARN)
+    return
+  end
+  vim.fn.setreg('+', path)
+  vim.notify('Copied path: ' .. path, vim.log.levels.INFO)
+end, { desc = '[Y]ank relative [P]ath to clipboard' })
+
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
