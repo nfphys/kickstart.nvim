@@ -679,12 +679,9 @@ require('lazy').setup({
         -- clangd = {},
         -- gopls = {},
         pyright = {},
-        -- ruff は lint / import 整理を担当する。ホバーは pyright に任せる
-        ruff = {
-          on_attach = function(client, _)
-            client.server_capabilities.hoverProvider = false
-          end,
-        },
+        -- ruff は lint / import 整理を担当する（ホバーは下の vim.lsp.config で
+        -- 無効化し、pyright に任せる）
+        ruff = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -710,6 +707,16 @@ require('lazy').setup({
           },
         },
       }
+
+      -- NOTE: mason-lspconfig v2 は `handlers` を廃止し、インストール済みサーバを
+      -- `automatic_enable`（= `vim.lsp.enable()`）で有効化する。そのため下の
+      -- `handlers` は呼ばれず、サーバ個別の上書きは `vim.lsp.config` で与える。
+      -- ruff は hover が pyright と重複するので無効化する。
+      vim.lsp.config('ruff', {
+        on_attach = function(client, _)
+          client.server_capabilities.hoverProvider = false
+        end,
+      })
 
       -- Ensure the servers and tools above are installed
       --
